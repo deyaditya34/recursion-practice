@@ -1,27 +1,39 @@
 const obj = {
   number1: 1,
-  name: "name",
-  color: "color",
+  // name: "name",
+  // color: "color",
   // city: "city",
   // number2: 2,
   // newName: "newName",
-  // arr: [
-  //   { name: "name", color: "color", city: "city" },
-  //   { name: "name", city: "city" },
-  //   { number1: 1 },
-  // ],
-  newObj: { newArr: "newArr", arr: { arr: "arr" } },
+  arr: [
+    { name: "name", color: "color", city: "city" },
+    { name: "name", city: "city" },
+    { number1: 1, number2: { number3: 2 } },
+  ],
+  newObj: {
+    number1: { name: "name" },
+    number2: { name: "name" },
+    // arr: [
+    //   { name: "name", color: "color" },
+    // ],
+  },
 };
 
-function stringifyObject(obj: {}, index = 0, result = "{") {
+function stringifyObject(
+  obj: {},
+  index = 0,
+  result = "",
+  endBracketCount = 0
+): string {
   const objKeys: string[] = Object.keys(obj);
   const resultKeys: string[] = objKeys.slice(index, objKeys.length);
 
-  // if (index === 0) {
-  //   result += "{";
-  // }
+  if (index === 0) {
+    result += "{";
+  }
 
   if (resultKeys.length <= 0) {
+    console.log("obj keys -", objKeys);
     result += "}";
     return result;
   }
@@ -29,10 +41,16 @@ function stringifyObject(obj: {}, index = 0, result = "{") {
   const resultKey: string = resultKeys[0];
   const resultKeyValue: string | number | {} | [] = Reflect.get(obj, resultKey);
 
+  // console.log("result key -", resultKey);
+  // console.log("result key value -", resultKeyValue);
+
   if (typeof resultKeyValue === "string") {
     result += insertDoubleQuote(resultKey);
     if (resultKeys.length === 1) {
-      result += ":" + insertDoubleQuote(resultKeyValue);
+      result +=
+        ":" +
+        insertDoubleQuote(resultKeyValue) +
+        insertEndBracket(endBracketCount);
     } else {
       result += ":" + insertDoubleQuote(resultKeyValue) + ",";
     }
@@ -41,7 +59,7 @@ function stringifyObject(obj: {}, index = 0, result = "{") {
   if (typeof resultKeyValue === "number") {
     result += insertDoubleQuote(resultKey);
     if (resultKeys.length === 1) {
-      result += ":" + resultKeyValue;
+      result += ":" + resultKeyValue + insertEndBracket(endBracketCount);
     } else {
       result += ":" + resultKeyValue + ",";
     }
@@ -51,26 +69,36 @@ function stringifyObject(obj: {}, index = 0, result = "{") {
     if (Array.isArray(resultKeyValue)) {
       result += insertDoubleQuote(resultKey);
 
-      const resultArrKeyValue = resultKeyValue.map((key: object) =>
-        stringifyObject(key),
+      const resultArrKeyValue = resultKeyValue.map((key: {}) =>
+        stringifyObject(key)
       );
       result += ":[";
 
       resultArrKeyValue.forEach((key, i) => {
         if (i === resultArrKeyValue.length - 1) {
-          result += key + "]";
+          if (resultKeys.length > 1) {
+            result += key + "]" + ",";
+          } else {
+            result += key + "]";
+          }
         } else {
           result += key + ",";
         }
       });
     } else {
-      result += "{" + 
-      console.log("result key value -", resultKeyValue);
-      return stringifyObject(resultKeyValue, 0, result);
+      endBracketCount++;
+
+      result += insertDoubleQuote(resultKey) + ":";
+      return stringifyObject(resultKeyValue, 0, result, endBracketCount);
+
+      // console.log("obj keys -", objKeys);
+      // console.log("result key -", resultKey);
+      // console.log("result key value -", resultKeyValue);
     }
   }
-  
-  return stringifyObject(obj, ++index, result);
+
+  index++;
+  return stringifyObject(obj, index, result, endBracketCount);
 }
 
 const a = JSON.stringify(obj);
@@ -83,3 +111,12 @@ function insertDoubleQuote(string: string): string {
   return result;
 }
 
+function insertEndBracket(count: number): string {
+  let result = "";
+
+  for (let i = 0; i < count; i++) {
+    result += "}";
+  }
+
+  return result;
+}
