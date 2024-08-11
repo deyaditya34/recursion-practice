@@ -1,101 +1,174 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var obj = {
-    number1: 1,
-    // name: "name",
-    // color: "color",
-    // city: "city",
-    // number2: 2,
-    // newName: "newName",
-    arr: [
-        { name: "name", color: "color", city: "city" },
-        { name: "name", city: "city" },
-        { number1: 1, number2: { number3: 2, number2: { number3: 3, number4: { number4: 4 } } } },
-    ],
-    newObj: {
-        arr: [
-            { name: "name", color: "color" },
-        ],
-        number1: { name: "name" },
-        number2: { name: "name" },
+    name: "John Doe",
+    age: 30,
+    address: {
+        street: "123 Main St",
+        city: "Metropolis",
+        postalCode: "12345",
+        coordinates: {
+            latitude: 40.7128,
+            longitude: -74.0060,
+            details: {
+                isUrban: true,
+                nearbyLandmarks: [
+                    {
+                        name: "Central Park",
+                        type: "Park",
+                        facilities: [
+                            {
+                                name: "Playground",
+                                openHours: "6 AM - 9 PM",
+                                equipment: ["Swings", "Slides", "Climbing Frames"]
+                            },
+                            {
+                                name: "Zoo",
+                                openHours: "8 AM - 5 PM",
+                                animals: ["Lions", "Tigers", "Bears"]
+                            }
+                        ]
+                    },
+                    {
+                        name: "Empire State Building",
+                        type: "Skyscraper",
+                        floors: 102,
+                        observationDecks: [
+                            {
+                                level: "86th Floor",
+                                view: "Panoramic",
+                                binocularsAvailable: true
+                            },
+                            {
+                                level: "102nd Floor",
+                                view: "Top Floor View",
+                                binocularsAvailable: false
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
     },
-};
-function stringifyObject(obj, index, result, endBracketCount) {
-    if (index === void 0) { index = 0; }
-    if (result === void 0) { result = ""; }
-    if (endBracketCount === void 0) { endBracketCount = 0; }
-    var objKeys = Object.keys(obj);
-    var resultKeys = objKeys.slice(index, objKeys.length);
-    if (index === 0) {
-        result += "{";
+    contactDetails: {
+        email: "johndoe@example.com",
+        phones: [
+            { type: "home", number: "555-1234" },
+            { type: "work", number: "555-5678" },
+            { type: "mobile", number: "555-8765" }
+        ]
+    },
+    preferences: {
+        favoriteFoods: ["Pizza", "Sushi", "Ice Cream"],
+        hobbies: ["Hiking", "Reading", "Coding"],
+        languagesSpoken: [
+            {
+                language: "English",
+                proficiency: "Fluent"
+            },
+            {
+                language: "Spanish",
+                proficiency: "Intermediate"
+            }
+        ]
+    },
+    family: {
+        spouse: {
+            name: "Jane Doe",
+            age: 28,
+            occupation: "Software Engineer",
+            hobbies: ["Painting", "Cycling"]
+        },
+        children: [
+            {
+                name: "Jimmy Doe",
+                age: 5,
+                school: {
+                    name: "Metropolis Elementary",
+                    grade: "Kindergarten",
+                    favoriteSubjects: ["Math", "Art"],
+                    extracurriculars: ["Soccer", "Chess Club"]
+                }
+            },
+            {
+                name: "Jenny Doe",
+                age: 3,
+                daycare: {
+                    name: "Little Learners",
+                    favoriteActivities: ["Storytime", "Nap Time"]
+                }
+            }
+        ]
     }
-    if (resultKeys.length <= 0) {
-        result += "}";
+};
+function stringifyObject(obj) {
+    if (typeof obj === "number" || typeof obj === "boolean") {
+        return obj;
+    }
+    if (typeof obj === "string") {
+        return "\"".concat(obj, "\"");
+    }
+    if (Array.isArray(obj)) {
+        var result = "[";
+        var arrMapValue = obj.map(function (val) { return stringifyObject(val); });
+        result += arrMapValue.join(",") + "]";
         return result;
     }
-    var resultKey = resultKeys[0];
-    var resultKeyValue = Reflect.get(obj, resultKey);
-    if (typeof resultKeyValue === "string") {
-        result += insertDoubleQuote(resultKey);
-        if (resultKeys.length === 1) {
-            result +=
-                ":" +
-                    insertDoubleQuote(resultKeyValue) +
-                    insertEndBracket(endBracketCount);
-        }
-        else {
-            result += ":" + insertDoubleQuote(resultKeyValue) + ",";
-        }
+    if (typeof obj === "object") {
+        // const objKeysValuesArr = Object.entries(obj);
+        // let result = "{";
+        // for (let i = 0; i < objKeysValuesArr.length; i++) {
+        //   if (i === objKeysValuesArr.length - 1) {
+        //     result +=
+        //       `"${objKeysValuesArr[i][0]}"` +
+        //       ":" +
+        //       stringifyObject(objKeysValuesArr[i][1]);
+        //   } else {
+        //     result +=
+        //       `"${objKeysValuesArr[i][0]}"` +
+        //       ":" +
+        //       stringifyObject(objKeysValuesArr[i][1]) +
+        //       ",";
+        //   }
+        // }
+        // result += "}";
+        // return result;
+        return "{" + Object.entries(obj).map(function (_a) {
+            var key = _a[0], val = _a[1];
+            return "\"".concat(key, "\":").concat(stringifyObject(val));
+        }).join(",") + "}";
     }
-    if (typeof resultKeyValue === "number") {
-        result += insertDoubleQuote(resultKey);
-        if (resultKeys.length === 1) {
-            result += ":" + resultKeyValue + insertEndBracket(endBracketCount);
-        }
-        else {
-            result += ":" + resultKeyValue + ",";
-        }
-    }
-    if (typeof resultKeyValue === "object") {
-        if (Array.isArray(resultKeyValue)) {
-            result += insertDoubleQuote(resultKey);
-            var resultArrKeyValue_1 = resultKeyValue.map(function (key) {
-                return stringifyObject(key);
-            });
-            result += ":[";
-            resultArrKeyValue_1.forEach(function (key, i) {
-                if (i === resultArrKeyValue_1.length - 1) {
-                    if (resultKeys.length > 1) {
-                        result += key + "]" + ",";
-                    }
-                    else {
-                        result += key + "]";
-                    }
-                }
-                else {
-                    result += key + ",";
-                }
-            });
-        }
-        else {
-            endBracketCount++;
-            result += insertDoubleQuote(resultKey) + ":";
-            return stringifyObject(resultKeyValue, 0, result, endBracketCount);
-        }
-    }
-    index++;
-    return stringifyObject(obj, index, result, endBracketCount);
+    return "stringifying data failed.";
 }
-var a = JSON.stringify(obj);
-console.log(a);
-console.log(stringifyObject(obj));
-function insertDoubleQuote(string) {
-    var result = "";
-    result += '"' + string + '"';
-    return result;
-}
-function insertEndBracket(count) {
-    var result = "";
-    for (var i = 0; i < count; i++) {
-        result += "}";
+function repeatFunction(number, fn, obj) {
+    for (var i = 0; i < number; i++) {
+        fn(obj);
     }
-    return result;
 }
+function testDefaultAndCustomFunctions() {
+    var startingTime = Date.now();
+    repeatFunction(1000, JSON.stringify, obj);
+    var endingTime = Date.now();
+    console.log("DEFAULT STRINGIFY FUNCTION TIME TAKEN FOR 1000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+    startingTime = Date.now();
+    repeatFunction(1000, stringifyObject, obj);
+    endingTime = Date.now();
+    console.log("CUSTOM STRINGIFY FUNCTION TIME TAKEN FOR 1000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+    startingTime = Date.now();
+    repeatFunction(100000, JSON.stringify, obj);
+    endingTime = Date.now();
+    console.log("DEFAULT STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+    startingTime = Date.now();
+    repeatFunction(100000, stringifyObject, obj);
+    endingTime = Date.now();
+    console.log("CUSTOM STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+    startingTime = Date.now();
+    repeatFunction(10000000, JSON.stringify, obj);
+    endingTime = Date.now();
+    console.log("DEFAULT STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+    startingTime = Date.now();
+    repeatFunction(10000000, stringifyObject, obj);
+    endingTime = Date.now();
+    console.log("CUSTOM STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+}
+testDefaultAndCustomFunctions();
