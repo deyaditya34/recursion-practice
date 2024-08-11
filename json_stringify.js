@@ -8,14 +8,14 @@ var obj = {
     arr: [
         { name: "name", color: "color", city: "city" },
         { name: "name", city: "city" },
-        { number1: 1, number2: { number3: 2 } },
+        { number1: 1, number2: { number3: 2, number2: { number3: 3, number4: { number4: 4 } } } },
     ],
     newObj: {
+        arr: [
+            { name: "name", color: "color" },
+        ],
         number1: { name: "name" },
         number2: { name: "name" },
-        // arr: [
-        //   { name: "name", color: "color" },
-        // ],
     },
 };
 function stringifyObject(obj, index, result, endBracketCount) {
@@ -28,14 +28,11 @@ function stringifyObject(obj, index, result, endBracketCount) {
         result += "{";
     }
     if (resultKeys.length <= 0) {
-        console.log("obj keys -", objKeys);
         result += "}";
         return result;
     }
     var resultKey = resultKeys[0];
     var resultKeyValue = Reflect.get(obj, resultKey);
-    // console.log("result key -", resultKey);
-    // console.log("result key value -", resultKeyValue);
     if (typeof resultKeyValue === "string") {
         result += insertDoubleQuote(resultKey);
         if (resultKeys.length === 1) {
@@ -82,9 +79,6 @@ function stringifyObject(obj, index, result, endBracketCount) {
             endBracketCount++;
             result += insertDoubleQuote(resultKey) + ":";
             return stringifyObject(resultKeyValue, 0, result, endBracketCount);
-            // console.log("obj keys -", objKeys);
-            // console.log("result key -", resultKey);
-            // console.log("result key value -", resultKeyValue);
         }
     }
     index++;
