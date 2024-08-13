@@ -1,6 +1,11 @@
 import * as fs from "fs";
 
-function findFiles(directory: string) {
+function findFiles(
+  directory: string,
+  h: string = "",
+  excludingDir: (string | number)[] = [],
+  countTab: number = 0
+) {
   if (!fs.existsSync(directory)) {
     return "directory not found";
   }
@@ -8,36 +13,67 @@ function findFiles(directory: string) {
   const isDirectory: boolean = fs.statSync(directory).isDirectory();
 
   if (!isDirectory) {
-    console.log(pathbeautify(directory));
-  }
-
-  if (isDirectory) {
+    console.log(directory) 
+  } else {
+  
     const directoriesList: string[] = fs.readdirSync(directory);
-    const selectedDirectories: string[] = directoriesList.filter(
-      (dir) => (!/^\./gi.test(dir) || !/node_modules/.test(dir))
-    );
 
-    for (let i = 0; i < selectedDirectories.length; i++) {
-      const newDirectory: string = directory + `/${selectedDirectories[i]}`;
-      findFiles(newDirectory);
-    }
+    const selectedDirectories: string[] = directoriesList.filter((dir) => {
+      const directoryFullPath: string = `${directory}/${dir}`;
+      const isDirFile = fs.statSync(directoryFullPath).isFile();
+
+      if (isDirFile) {
+        findFiles(directoryFullPath, h, excludingDir, countTab);
+      } else {
+        let dirToDisplay: boolean = true;
+        if (h) {
+          if (h === "h") {
+            const dirHiddenStatus: boolean = /^\./gi.test(dir);
+            if (dirHiddenStatus) {
+              dirToDisplay = false
+            }
+          }
+        }
+
+        if (excludingDir.length > 0) {
+          for (let i = 0; i < excludingDir.length; i++) {
+            if (dir === excludingDir[i]) {
+              dirToDisplay = false;
+            }
+          }
+          
+          if (dirToDisplay) {
+            findFiles(directoryFullPath, h, excludingDir, countTab)
+          }
+        }
+
+        return true;
+      }
+    });
+
+    // for (let i = 0; i < selectedDirectories.length; i++) {
+    //   const newDirectory: string = `${directory}/${selectedDirectories[i]}`;
+    //    findFiles(newDirectory, h, excludingDir, countTab);
+    // }
   }
 
   return "file listing completed";
 }
 
-function pathbeautify(path: string): string {
-  let result = "";
+// function countTab(defaultDirectory: string, newDirectory: string): number {
+//   let result: number = 0;
 
-  for (let i = 1; i < path.length; i++) {
-    if (path[i] === "/") {
-      result += "--";
-    } else {
-      result += path[i];
-    }
-  }
+//   const defaultDirLength = defaultDirectory.length;
 
-  return result;
-}
+//   for (let i = defaultDirLength; i < newDirectory.length; i++) {
+//     if (newDirectory[i] === "/" && newDirectory[i + 1]) {
+//       result++;
+//     }
+//   }
 
-console.log(findFiles("/Users/adityadey/Documents/program/"));
+//   return result;
+// }
+
+console.log(
+  findFiles("/home/aditya/Documents/program/", "h", ["node_modules"], 0)
+);

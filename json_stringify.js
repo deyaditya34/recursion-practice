@@ -9,7 +9,7 @@ var obj = {
         postalCode: "12345",
         coordinates: {
             latitude: 40.7128,
-            longitude: -74.0060,
+            longitude: -74.006,
             details: {
                 isUrban: true,
                 nearbyLandmarks: [
@@ -20,14 +20,14 @@ var obj = {
                             {
                                 name: "Playground",
                                 openHours: "6 AM - 9 PM",
-                                equipment: ["Swings", "Slides", "Climbing Frames"]
+                                equipment: ["Swings", "Slides", "Climbing Frames"],
                             },
                             {
                                 name: "Zoo",
                                 openHours: "8 AM - 5 PM",
-                                animals: ["Lions", "Tigers", "Bears"]
-                            }
-                        ]
+                                animals: ["Lions", "Tigers", "Bears"],
+                            },
+                        ],
                     },
                     {
                         name: "Empire State Building",
@@ -37,26 +37,26 @@ var obj = {
                             {
                                 level: "86th Floor",
                                 view: "Panoramic",
-                                binocularsAvailable: true
+                                binocularsAvailable: true,
                             },
                             {
                                 level: "102nd Floor",
                                 view: "Top Floor View",
-                                binocularsAvailable: false
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+                                binocularsAvailable: false,
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
     },
     contactDetails: {
         email: "johndoe@example.com",
         phones: [
             { type: "home", number: "555-1234" },
             { type: "work", number: "555-5678" },
-            { type: "mobile", number: "555-8765" }
-        ]
+            { type: "mobile", number: "555-8765" },
+        ],
     },
     preferences: {
         favoriteFoods: ["Pizza", "Sushi", "Ice Cream"],
@@ -64,20 +64,20 @@ var obj = {
         languagesSpoken: [
             {
                 language: "English",
-                proficiency: "Fluent"
+                proficiency: "Fluent",
             },
             {
                 language: "Spanish",
-                proficiency: "Intermediate"
-            }
-        ]
+                proficiency: "Intermediate",
+            },
+        ],
     },
     family: {
         spouse: {
             name: "Jane Doe",
             age: 28,
             occupation: "Software Engineer",
-            hobbies: ["Painting", "Cycling"]
+            hobbies: ["Painting", "Cycling"],
         },
         children: [
             {
@@ -87,19 +87,19 @@ var obj = {
                     name: "Metropolis Elementary",
                     grade: "Kindergarten",
                     favoriteSubjects: ["Math", "Art"],
-                    extracurriculars: ["Soccer", "Chess Club"]
-                }
+                    extracurriculars: ["Soccer", "Chess Club"],
+                },
             },
             {
                 name: "Jenny Doe",
                 age: 3,
                 daycare: {
                     name: "Little Learners",
-                    favoriteActivities: ["Storytime", "Nap Time"]
-                }
-            }
-        ]
-    }
+                    favoriteActivities: ["Storytime", "Nap Time"],
+                },
+            },
+        ],
+    },
 };
 function stringifyObject(obj) {
     if (typeof obj === "number" || typeof obj === "boolean") {
@@ -116,7 +116,8 @@ function stringifyObject(obj) {
     }
     if (typeof obj === "object") {
         // const objKeysValuesArr = Object.entries(obj);
-        // let result = "{";
+        var objKeysArr = Object.keys(obj);
+        var result = "{";
         // for (let i = 0; i < objKeysValuesArr.length; i++) {
         //   if (i === objKeysValuesArr.length - 1) {
         //     result +=
@@ -131,12 +132,19 @@ function stringifyObject(obj) {
         //       ",";
         //   }
         // }
-        // result += "}";
-        // return result;
-        return "{" + Object.entries(obj).map(function (_a) {
-            var key = _a[0], val = _a[1];
-            return "\"".concat(key, "\":").concat(stringifyObject(val));
-        }).join(",") + "}";
+        var count = 0;
+        for (var key in obj) {
+            if (count === objKeysArr.length - 1) {
+                result += "\"".concat(key, "\":").concat(stringifyObject(obj[key]));
+            }
+            else {
+                result += "\"".concat(key, "\":").concat(stringifyObject(obj[key]), ",");
+            }
+            count++;
+        }
+        result += "}";
+        return result;
+        // return "{" + Object.entries(obj).map(([key, val]) => `"${key}":${stringifyObject(val)}`).join(",") + "}"
     }
     return "stringifying data failed.";
 }
@@ -146,29 +154,18 @@ function repeatFunction(number, fn, obj) {
     }
 }
 function testDefaultAndCustomFunctions() {
+    test(1000);
+    test(10000);
+    test(50000);
+}
+function test(num) {
     var startingTime = Date.now();
-    repeatFunction(1000, JSON.stringify, obj);
+    repeatFunction(num, JSON.stringify, obj);
     var endingTime = Date.now();
-    console.log("DEFAULT STRINGIFY FUNCTION TIME TAKEN FOR 1000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+    console.log("DEFAULT STRINGIFY FUNCTION TIME TAKEN FOR ".concat(num, " TIMES -"), (endingTime - startingTime) / 1000, "seconds");
     startingTime = Date.now();
-    repeatFunction(1000, stringifyObject, obj);
+    repeatFunction(num, stringifyObject, obj);
     endingTime = Date.now();
-    console.log("CUSTOM STRINGIFY FUNCTION TIME TAKEN FOR 1000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
-    startingTime = Date.now();
-    repeatFunction(100000, JSON.stringify, obj);
-    endingTime = Date.now();
-    console.log("DEFAULT STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
-    startingTime = Date.now();
-    repeatFunction(100000, stringifyObject, obj);
-    endingTime = Date.now();
-    console.log("CUSTOM STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
-    startingTime = Date.now();
-    repeatFunction(10000000, JSON.stringify, obj);
-    endingTime = Date.now();
-    console.log("DEFAULT STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
-    startingTime = Date.now();
-    repeatFunction(10000000, stringifyObject, obj);
-    endingTime = Date.now();
-    console.log("CUSTOM STRINGIFY FUNCTION TIME TAKEN FOR 100000 TIMES -", (endingTime - startingTime) / 1000, "seconds");
+    console.log("CUSTOM STRINGIFY FUNCTION TIME TAKEN FOR ".concat(num, " TIMES -"), (endingTime - startingTime) / 1000, "seconds");
 }
 testDefaultAndCustomFunctions();
