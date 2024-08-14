@@ -18,9 +18,9 @@ function findFiles(
   } else {
     const directoriesList: string[] = fs.readdirSync(directory);
 
-    directoriesList.filter((dir) => {
+    directoriesList.forEach((dir) => {
       const directoryFullPath: string = `${directory}/${dir}`;
-      const isDirFile = fs.statSync(directoryFullPath).isFile();
+      const isDirFile: boolean = fs.statSync(directoryFullPath).isFile();
 
       if (!presentDirectory) {
         presentDirectory = directoryFullPath;

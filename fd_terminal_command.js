@@ -15,7 +15,7 @@ function findFiles(directory, h, excludingDir, insertTab, presentDirectory) {
     }
     else {
         var directoriesList = fs.readdirSync(directory);
-        directoriesList.filter(function (dir) {
+        directoriesList.forEach(function (dir) {
             var directoryFullPath = "".concat(directory, "/").concat(dir);
             var isDirFile = fs.statSync(directoryFullPath).isFile();
             if (!presentDirectory) {
