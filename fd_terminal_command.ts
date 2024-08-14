@@ -4,7 +4,8 @@ function findFiles(
   directory: string,
   h: string = "",
   excludingDir: (string | number)[] = [],
-  countTab: number = 0
+  insertTab: number = 0,
+  presentDirectory: string = ""
 ) {
   if (!fs.existsSync(directory)) {
     return "directory not found";
@@ -13,24 +14,29 @@ function findFiles(
   const isDirectory: boolean = fs.statSync(directory).isDirectory();
 
   if (!isDirectory) {
-    console.log(directory) 
+    console.log("\t".repeat(insertTab) + directory);
   } else {
-  
     const directoriesList: string[] = fs.readdirSync(directory);
 
-    const selectedDirectories: string[] = directoriesList.filter((dir) => {
+    directoriesList.filter((dir) => {
       const directoryFullPath: string = `${directory}/${dir}`;
       const isDirFile = fs.statSync(directoryFullPath).isFile();
 
+      if (!presentDirectory) {
+        presentDirectory = directoryFullPath;
+      }
+
+      const increaseTab: number = countTab(presentDirectory, directoryFullPath);
+      presentDirectory = directoryFullPath;
+      insertTab += increaseTab;
+
       if (isDirFile) {
-        findFiles(directoryFullPath, h, excludingDir, countTab);
+        findFiles(directoryFullPath, h, excludingDir, insertTab);
       } else {
-        let dirToDisplay: boolean = true;
         if (h) {
           if (h === "h") {
-            const dirHiddenStatus: boolean = /^\./gi.test(dir);
-            if (dirHiddenStatus) {
-              dirToDisplay = false
+            if (/^\./gi.test(dir)) {
+              return;
             }
           }
         }
@@ -38,42 +44,56 @@ function findFiles(
         if (excludingDir.length > 0) {
           for (let i = 0; i < excludingDir.length; i++) {
             if (dir === excludingDir[i]) {
-              dirToDisplay = false;
+              return;
             }
-          }
-          
-          if (dirToDisplay) {
-            findFiles(directoryFullPath, h, excludingDir, countTab)
           }
         }
 
-        return true;
+        console.log("\t".repeat(insertTab) + directoryFullPath);
+        findFiles(
+          directoryFullPath,
+          h,
+          excludingDir,
+          insertTab,
+          presentDirectory
+        );
       }
     });
-
-    // for (let i = 0; i < selectedDirectories.length; i++) {
-    //   const newDirectory: string = `${directory}/${selectedDirectories[i]}`;
-    //    findFiles(newDirectory, h, excludingDir, countTab);
-    // }
   }
 
   return "file listing completed";
 }
 
-// function countTab(defaultDirectory: string, newDirectory: string): number {
-//   let result: number = 0;
+function countTab(previousDir: string, presentDir: string): number {
+  let countBackSlashInPrevDir: number = 0;
+  let countbackSlashInPresDir: number = 0;
 
-//   const defaultDirLength = defaultDirectory.length;
+  for (let i = 0; i < previousDir.length; i++) {
+    if (previousDir[i] === "/") {
+      countBackSlashInPrevDir++;
+    }
+  }
 
-//   for (let i = defaultDirLength; i < newDirectory.length; i++) {
-//     if (newDirectory[i] === "/" && newDirectory[i + 1]) {
-//       result++;
-//     }
-//   }
+  for (let i = 0; i < presentDir.length; i++) {
+    if (presentDir[i] === "/") {
+      countbackSlashInPresDir++;
+    }
+  }
 
-//   return result;
-// }
+  if (countbackSlashInPresDir - countBackSlashInPrevDir >= 1) {
+    return 1;
+  } else if (countbackSlashInPresDir - countBackSlashInPrevDir === 0) {
+    return 0;
+  } else {
+    return -1;
+  }
+}
 
 console.log(
-  findFiles("/home/aditya/Documents/program/", "h", ["node_modules"], 0)
+  findFiles(
+    "/home/aditya/Documents/program",
+    "h",
+    ["node_modules"],
+    0
+  )
 );
