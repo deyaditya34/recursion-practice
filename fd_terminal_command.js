@@ -72,4 +72,5 @@ function countTab(previousDir, presentDir) {
         return -1;
     }
 }
-console.log(findFiles("/home/aditya/Documents/program", "h", ["node_modules"], 0));
+console.log(findFiles("/home", ""));
+// console.log(process.env.BASE_DIRECTORY)

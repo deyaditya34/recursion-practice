@@ -91,9 +91,8 @@ function countTab(previousDir: string, presentDir: string): number {
 
 console.log(
   findFiles(
-    "/home/aditya/Documents/program",
-    "h",
-    ["node_modules"],
-    0
-  )
+    "/home",
+    ""  )
 );
+
+// console.log(process.env.BASE_DIRECTORY)
