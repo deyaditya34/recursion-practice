@@ -10,5 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "path": "^0.12.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deyaditya34/recursion-practice.git"
+  },
+  "bugs": {
+    "url": "https://github.com/deyaditya34/recursion-practice/issues"
+  },
+  "homepage": "https://github.com/deyaditya34/recursion-practice#readme"
 }
